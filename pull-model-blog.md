@@ -406,7 +406,7 @@ Limitations
 1. Resources are only deployed on the managed cluster(s).
 2. If a resource failed to be deployed, it won't be included in the `Multicluster ApplicationSet Report`.
 3. In the pull model, the local-cluster is excluded as target managed cluster.
-4. There might be usecases where the Managed-Clusters cannot reach the `GitServer`.  In this usecase a push model would be the only solution.
+4. There might be usecases where the Managed-Clusters cannot reach the GitServer.  In this usecase a push model would be the only solution.
 
 ## Wrapup
 
