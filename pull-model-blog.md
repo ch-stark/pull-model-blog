@@ -34,7 +34,7 @@ See [here](https://open-cluster-management.io/concepts/placement/) for a detaile
 
 This ArgoCD pull model controller on the Hub cluster will create `ManifestWork objects` wrapping `Application objects` as payload.
 See [here](https://open-cluster-management.io/concepts/manifestwork/) for more info regarding ManifestWork which a central concepts for delivering workloads to the Spoke-Clusters.
-The OpenClusterManagement agent on the Managed cluster will notice the ManifestWork on the Hub cluster and pull the Application from there.
+The Open Cluster Management agent on the Managed cluster will notice the ManifestWork on the Hub cluster and pull the Application from there.
 
 
 ## Setting up the solution using Open Cluster Management (OCM) 
@@ -205,16 +205,12 @@ annotations:
  argocd.argoproj.io/skip-reconcile: "true"
 ```
 
-For more details, please refer to this link from the GitopsOperator documentation: 
-
-https://docs.openshift.com/container-platform/4.11/cicd/gitops/configuring-an-openshift-cluster-by-deploying-an-application-with-cluster-configurations.html#creating-an-application-by-using-the-oc-tool_configuring-an-openshift-cluster-by-deploying-an-application-with-cluster-configurations
+For more details, please refer to this link from the GitopsOperator [documentation](https://docs.openshift.com/container-platform/4.11/cicd/gitops/configuring-an-openshift-cluster-by-deploying-an-application-with-cluster-configurations.html#creating-an-application-by-using-the-oc-tool_configuring-an-openshift-cluster-by-deploying-an-application-with-cluster-configurations): 
 
 
-Explicitly declare all application destination namespaces in the Git repo or Helm repo for the application, and include the managed-by label in the namespaces. Refer to the link on how to declare a namespace containing the managed-by label in a Git repo.
+Explicitly declare all application destination namespaces in the Git repo or Helm repo for the application, and include the managed-by label in the namespaces. Refer to the link on how to declare a [namespace](https://github.com/redhat-developer-demos/openshift-gitops-examples/blob/44fc1d4a38cb79ffa6c8524788f5ac87f369d41c/apps/bgd/overlays/bgd/bgd-ns.yaml#L6) containing the managed-by label in a Git repo.
 
-https://github.com/redhat-developer-demos/openshift-gitops-examples/blob/44fc1d4a38cb79ffa6c8524788f5ac87f369d41c/apps/bgd/overlays/bgd/bgd-ns.yaml#L6
-
-For deploying applications using the pull model, it is important for the ArgoCD application controllers to ignore these application resources on the hub cluster. The desired solution is to add the argocd.argoproj.io/skip-reconcile annotation to the template section of the applicationSet. On the ACM hub cluster, the required OpenShift GitOps operator must be version 1.9.0 or above. On the managed cluster(s), the OpenShift GitOps operator is recommended to be at the same level as the hub cluster.
+For deploying applications using the pull model, it is important for the ArgoCD application controllers to ignore these application resources on the hub cluster. The desired solution is to add the `argocd.argoproj.io/skip-reconcile` annotation to the template section of the applicationSet. On the ACM hub cluster, the required OpenShift GitOps operator must be version 1.9.0 or above. On the managed cluster(s), the OpenShift GitOps operator is recommended to be at the same level as the hub cluster.
 
 
 
@@ -222,7 +218,7 @@ For deploying applications using the pull model, it is important for the ArgoCD 
 
 The ArgoCD ApplicationSet CRD is used to deploy applications on the managed clusters using the push or pull model. It uses a placement resource in the generator field to get a list of managed clusters. The template field supports parameter substitution of specifications for the application. The ArgoCD applicationSet controller on the hub cluster manages the creation of the application for each target cluster.
 
-For the pull model, the destination for the application must be the default local kubernetes server (https://kubernetes.default.svc) since the application will be deployed locally by the application controller on the managed cluster. By default, the push model is used to deploy the application, unless the annotations apps.open-cluster-management.io/ocm-managed-cluster and apps.open-cluster-management.io/pull-to-ocm-managed-cluster are added to the template section of the applicationSet.
+For the pull model, the destination for the application must be the default local kubernetes server (https://kubernetes.default.svc) since the application will be deployed locally by the application controller on the managed cluster. By default, the push model is used to deploy the application, unless the annotations apps.`open-cluster-management.io/ocm-managed-cluster` and `apps.open-cluster-management.io/pull-to-ocm-managed-cluster` are added to the template section of the applicationSet.
 
 The following is a sample ApplicationSet YAML that uses the pull model:
 
@@ -268,7 +264,7 @@ Propagation controller
 There are two sets of controllers on the hub cluster watching the applicationSet resources: 
 
 The existing Argo CD application controllers and the new propagation controller. 
-Annotations in the application resource are used to determine which controller reconciles to deploy the application. The ArgoCD application controllers, which are used for the push model,  ignore applications that contain the argocd.argoproj.io/skip-reconcile annotation. The propagation controller, which supports the pull model, only reconciles on applications that contain the apps.open-cluster-management.io/ocm-managed-cluster annotation. 
+Annotations in the application resource are used to determine which controller reconciles to deploy the application. The ArgoCD application controllers, which are used for the push model,  ignore applications that contain the `argocd.argoproj.io/skip-reconcile` annotation. The propagation controller, which supports the pull model, only reconciles on applications that contain the `apps.open-cluster-management.io/ocm-managed-cluster` annotation. 
 
 It generates a manifestWork to deliver the application to the managed cluster. 
 
@@ -329,9 +325,10 @@ spec:
 ```
 
 As a result of the feedback rules specified in manifestConfigs, the health status and the sync status from the status of the ArgoCD application are synced to the manifestwork’s statusFeedback.
+
 Deploy application by the local ArgoCD server on the managed cluster.
 
-After the ArgoCD application is created on the managed cluster through ManifestWorks, the local ArgoCD controllers reconcile to deploy the application. The controllers deploy the application through this sequence of operations:
+After the ArgoCD application is created on the managed cluster through `ManifestWorks`, the local ArgoCD controllers reconcile to deploy the application. The controllers deploy the application through this sequence of operations:
 
 Connect and pull resources from the specified Git/Helm repository
 Deploy the resources on the local managed cluster
@@ -341,19 +338,23 @@ Multicluster Application report - aggregate application status from the managed 
 A new multicluster applicationSet report CRD is introduced to provide an aggregate status of the applicationSet on the hub. The report is only created for applicationSets that are deployed using the new pull model. It includes the list of resources and the overall status of the application from each managed cluster. A separate multicluster applicationSet report resource is created for each ArgoCD applicationSet resource. The report is created in the same namespace as the applicationSet. The Multicluster ApplicationSet report includes:
 
 List of resources for the ArgoCD application
+
 Overall sync and health status for one ArgoCD application
 Includes error message for each cluster where the overall status is out of sync or unhealthy
 Summary status of the overall application status from all the managed clusters
 
-To support the generation of the multicluster applicationSet report, two new controllers have been added to the hub cluster: the resource sync controller and the aggregation controller. The resource sync controller runs every 10 seconds, and its purpose is to query the OCM search V2 component on each managed cluster to retrieve the resource list and any error messages for each ArgoCD application. It then produces an intermediate report for each application set, which is intended to be used by the aggregation controller to generate the final multicluster applicationSet report.
+To support the generation of the multicluster applicationSet report, two new controllers have been added to the hub cluster: the resource sync controller and the aggregation controller. 
+The resource sync controller runs every 10 seconds, and its purpose is to query the OCM search V2 component on each managed cluster to retrieve the resource list and any error messages for each ArgoCD application. 
+It then produces an intermediate report for each application set, which is intended to be used by the aggregation controller to generate the final multicluster applicationSet report.
 
 The aggregation controller also runs every 10 seconds, and it uses the report generated by the resource sync controller to add the health and sync status of the application on each managed cluster. The status for each application is retrieved from the status feedback in the manifestwork for the application. Once the aggregation is complete, the final multicluster applicationSet report is saved in the same namespace as the ArgoCD applicationSet, with the same name as the applicationSet.
 
 The two new controllers, along with the propagation controller, all run in separate containers in the same multicluster-integrations pod, as shown in the example below:
 
+```
 NAMESPACE               NAME                                       READY   STATUS  
 open-cluster-management multicluster-integrations-7c46498d9-fqbq4  3/3     Running  
-
+```
 
 The following is a sample multicluster applicationSet report YAML for the guestbook applicationSet.
 
@@ -400,7 +401,7 @@ ApplicationSet Report.
 
 Wrapup:
 
-I'd like to thanks RHACM's ApplicationLifecyclemanagement team for their huge efforts making this new important feature possible
+I'd like to thanks RHACM's ApplicationLifecyclemanagement team for their huge efforts making this new important feature possible.
 
 
 
