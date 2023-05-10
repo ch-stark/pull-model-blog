@@ -2,7 +2,7 @@
 
 Authors: Mike Ng, Christian Stark
 
-Abstract:
+## Abstract:
 
 Argo CD is a CNCF project that utilizes a `GitOps approach` for managing and deploying applications on Kubernetes clusters. On the other hand, Open Cluster Management (OCM) is a CNCF Sandbox project that focuses on managing a fleet of Kubernetes clusters at scale.
 
@@ -206,8 +206,7 @@ argocd.argoproj.io/managed-by: openshift-gitops
 
 4. Let ArgoCD Application controller ignore these ArgoCD applications propagated by pull model
 -
-For OpenShift GitOps operator 1.9.0+,  specify the annotation in the ArgoCD ApplicationSet template
-annotations:
+For OpenShift GitOps operator 1.9.0+,  specify the annotation in the ArgoCD ApplicationSet template annotations:
 
 ```
  argocd.argoproj.io/skip-reconcile: "true"
@@ -266,7 +265,7 @@ spec:
         - CreateNamespace=true
 ```
 
-Propagation controller:
+`Propagation controller`:
 
 There are two sets of controllers on the hub cluster watching the applicationSet resources: 
 
@@ -411,7 +410,8 @@ Limitations
 
 ## Wrapup
 
-I'd like to thank RHACM's ApplicationLifecyclemanagement team for their huge efforts making this new important feature possible.
+I'd like to thank RHACM's ApplicationLifecyclemanagement team for their huge efforts making this new important feature possible. We would both love to get feedback
+on RHACM's 2.8 feature and we would love to collaborate with you in the OpenClusterManagement community.
 
 
 
