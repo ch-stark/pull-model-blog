@@ -1,6 +1,6 @@
 # Introducing the ArgoCD Application Pull Controller for Open Cluster Management
 
-Authors: Mike Ng, Christian Stark
+Authors: 
 
 ## Abstract:
 
