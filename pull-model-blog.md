@@ -1,24 +1,16 @@
 # Introducing the ArgoCD Application Pull Controller for Open Cluster Management
 
+Authors: Mike Ng, Christian Stark
+
 Abstract:
 
-Argo CD is a graduated CNCF project that takes a GitOps approach to managing and deploying applications on Kubernetes clusters. 
-Open Cluster Management (OCM) is a CNCF Sandbox project that is focused on managing a fleet of Kubernetes clusters at scale. 
+Argo CD is a CNCF project that utilizes a GitOps approach for managing and deploying applications on Kubernetes clusters. On the other hand, Open Cluster Management (OCM) is a CNCF Sandbox project that focuses on managing a fleet of Kubernetes clusters at scale.
 
-The current Argo CD architecture is provided as a push model, which allows for pushing workload from a centralized cluster to the remote clusters.
-So it requires basically a connection from the control-plane to the remote cluster.
+Argo CD currently utilizes a push model architecture where workload is pushed from a centralized cluster to remote clusters, requiring a connection between the control-plane and the remote destination. However, the pull model offers several advantages over the push model, and Open Cluster Management's architecture aligns better with the pull model.
 
-The pull model offers several advantages over the existing push model. 
-It is well researched and documented that hub-spoke patterns generally offer better scalability. 
-Remote cluster credentials no longer have to be stored in a centralized environment which offers enhanced security and allows for a more closed air gap environment to use Argo CD. If the primary cluster goes down, the other remote clusters can still function independently, which eliminates the single point of failure.
+One advantage of the pull model is decentralized control, where each cluster has its own copy of the configuration and is responsible for pulling updates on its own. This eliminates the need for a centralized system to be aware of all the target clusters and their configurations, making the system more scalable and easier to manage. Additionally, the pull model offers better security by reducing the risk of unauthorized access and eliminating the need for remote cluster credentials to be stored in a centralized environment. The pull model also provides more flexibility, allowing clusters to pull updates on their own schedule and reducing the risk of conflicts or disruptions.
 
-Open Cluster Management follows mainly an architecture where the Managed-Cluster is connecting to the Hub-Cluster so the new pull model fits better into its architecture.
-
-The goal of this blog is to highlight that there is a different delivery pattern than the traditional centralized push model approach. We will also highlight how to enhance an existing popular project such as Argo CD, without making significant code changes to their Applications. By integrating and enhancing capabilities in a more decoupled methodology, the GitOps ecosystem can be expanded at a risk free and accelerated pace.
-
-Note: One additional goal of this project is to migrate existing native OCM application delivery (AppSubscription users) to ArgoCD. So the pull model is designed with the existing OCM AppSubscription users in mind to match their existing use cases.
-The blog highlights mainly the upstream version of RedHatAdvancedCluster-Managed but also explains how to use it with RHACM 2.8 where the 
-feature will be introduced as Tech-Preview.
+The goal of this blog is to highlight the benefits of using a pull model for managing multiple Kubernetes clusters in a CD system like ArgoCD. It also explains how to enhance Argo CD without significant code changes to existing applications and how to migrate existing OCM AppSubscription users to ArgoCD. The blog mainly focuses on the upstream version of RedHatAdvancedCluster-Managed but also explains how to use it with RHACM 2.8, where the pull model feature will be introduced as Tech-Preview.
 
 ## OCM key components used in ArgoCD pull model Integration
 
@@ -35,35 +27,24 @@ demo-managed-1   true                         True         True              16h
 
 ### Placement: dynamically select a set of managed clusters
 
-See here a detailed description:
-https://open-cluster-management.io/concepts/placement/
+
+See [here](https://open-cluster-management.io/concepts/placement/) for a detailed description on the `Placement-CRD` which is a central component of the MultiCluster solution.
 
 ## Architecture and Dependencies
 
-
 This ArgoCD pull model controller on the Hub cluster will create `ManifestWork objects` wrapping `Application objects` as payload.
-See here more info regarding ManifestWork: https://open-cluster-management.io/concepts/manifestwork/
-
-The OCM agent on the Managed cluster will notice the ManifestWork on the Hub cluster and pull the Application from there.
+See [here](https://open-cluster-management.io/concepts/manifestwork/) for more info regarding ManifestWork which a central concepts for delivering workloads to the Spoke-Clusters.
+The OpenClusterManagement agent on the Managed cluster will notice the ManifestWork on the Hub cluster and pull the Application from there.
 
 
 ## Setting up the solution using Open Cluster Management (OCM) 
 
-The Open Cluster Management (OCM) multi-cluster environment needs to be setup. 
+The Open Cluster Management (OCM) multi-cluster environment needs to be setup. Note: Currently OCM as the upstream version of RHACM does not have a UI.
 
-See OCM website on how to set up a quick demo environment based on kind.
+See the [OCM website](https://open-cluster-management.io/getting-started/quick-start/#setup-hub-and-managed-cluster) on how to set up a quick demo environment based on kind.
+In the overall solution OCM-Hub will provide the cluster inventory and ability to deliver workload to the remote/managed clusters.
 
-In this pull model, OCM will provide the cluster inventory and ability to deliver workload to the remote/managed clusters.
-
-The Hub cluster and remote/managed clusters need to have ArgoCD Application installed. See ArgoCD website for more details.
-
-
-### Getting Started
-
-Note: Currently open-cluster-management the upstream version of ACM does not have a UI.
-
-Setup an OCM Hub cluster and register an OCM Managed cluster. See Open Cluster Management Quick Start for more details.
-Install ArgoCD on both clusters. See ArgoCD website for more details.
+The Hub cluster and remote/managed clusters need to have ArgoCD Application installed. See the [ArgoCD website](https://argo-cd.readthedocs.io/en/stable/) for more details.
 
 
 #### ArgoCD-Installation:
@@ -89,8 +70,12 @@ If your controller starts successfully, you should see:
 ```
 $ kubectl -n argocd get deploy | grep pull
 argocd-pull-integration-controller-manager   1/1     1            1           106s
+```
+
 On the Hub cluster, create an ArgoCD cluster secret that represents the managed cluster. 
 Note replace the cluster-name with the registered managed cluster name.
+
+```
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Secret
@@ -411,6 +396,7 @@ Limitations
 2. If a resource failed to be deployed, it won't be included in the Multicluster
 ApplicationSet Report.
 3. In the pull model, the local-cluster is excluded as target managed cluster.
+4. There might be usecases where the Managed-Clusters cannot reach the GitServer.  In this usecase a push model would be the only solution.
 
 Wrapup:
 
