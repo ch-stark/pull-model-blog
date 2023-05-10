@@ -4,9 +4,10 @@ Authors: Mike Ng, Christian Stark
 
 ## Abstract:
 
-Argo CD is a CNCF project that utilizes a `GitOps approach` for managing and deploying applications on Kubernetes clusters. On the other hand, Open Cluster Management (OCM) is a CNCF Sandbox project that focuses on managing a fleet of Kubernetes clusters at scale.
+Argo CD is a CNCF project that utilizes a `GitOps approach` for managing and deploying applications on Kubernetes clusters. On the other hand, `Open Cluster Management (OCM)` is a CNCF Sandbox project that focuses on managing a fleet of Kubernetes clusters at scale.
 
-Argo CD currently utilizes a push model architecture where workload is pushed from a centralized cluster to remote clusters, requiring a connection between the control-plane and the remote destination. However, the pull model offers several advantages over the push model, and `Open Cluster Management's architecture` aligns better with the pull model.
+Argo CD currently utilizes a push model architecture where workload is pushed from a centralized cluster to remote clusters, requiring a connection between the control-plane and the remote destination. 
+The pull model offers several advantages over the push model, and `Open Cluster Management's architecture` aligns with its overall architecture much better with such a pull model.
 
 One advantage of the pull model is decentralized control, where each cluster has its own copy of the configuration and is responsible for pulling updates on its own. This eliminates the need for a centralized system to be aware of all the target clusters and their configurations, making the system more scalable and easier to manage. Additionally, the pull model offers better security by reducing the risk of unauthorized access and eliminating the need for remote cluster credentials to be stored in a centralized environment. The pull model also provides more flexibility, allowing clusters to pull updates on their own schedule and reducing the risk of conflicts or disruptions.
 
@@ -119,6 +120,7 @@ kubectl apply -f example/guestbook-app-set.yaml
 ```
 
 Note: The Application template inside the ApplicationSet must contain the following content:
+
 ```     
      labels:
         apps.open-cluster-management.io/pull-to-ocm-managed-cluster: 'true'
@@ -130,6 +132,7 @@ Note: The Application template inside the ApplicationSet must contain the follow
 The label allows the pull model controller to select the Application for processing.
 The `skip-reconcile` annotation is to prevent the Application from reconciling on the Hub cluster.
 The `ocm-managed-cluster` annotation is for the ApplicationSet to generate multiple Application based on each cluster generator targets.
+
 When this guestbook ApplicationSet reconciles, it will generate an Application for the registered ManagedCluster. 
 For example:
 
@@ -165,11 +168,9 @@ NAME                     SYNC STATUS   HEALTH STATUS
 cluster1-guestbook-app   Synced        Healthy
 ```
 
-
 Setting up instructions for RHACM 2.8
 
 1. Install OpenShift GitOps operator on the hub and all the target managed clusters. We recommend the installed namespace: `openshift-gitops`.
-
 
 2. Every managed cluster needs to have a cluster secret in the ArgoCD server namespace on the hub cluster. This is required by the ArgoCD application set controller to 
    propagate the ArgoCD application template for a managed cluster. We recommend that users create a gitOpsCluster resource that contains a reference to a placement resource. The placement resource selects all the managed clusters that need to support the pull model.  As a result, managed cluster secrets will be created in the ArgoCD server namespace.
@@ -205,8 +206,8 @@ argocd.argoproj.io/managed-by: openshift-gitops
 ```
 
 4. Let ArgoCD Application controller ignore these ArgoCD applications propagated by pull model
--
-For OpenShift GitOps operator 1.9.0+,  specify the annotation in the ArgoCD ApplicationSet template annotations:
+   
+   For OpenShift GitOps operator 1.9.0+, specify the annotation in the ArgoCD ApplicationSet template annotations:
 
 ```
  argocd.argoproj.io/skip-reconcile: "true"
@@ -215,7 +216,7 @@ For OpenShift GitOps operator 1.9.0+,  specify the annotation in the ArgoCD Appl
 For more details, please refer to this link from the GitopsOperator [documentation](https://docs.openshift.com/container-platform/4.11/cicd/gitops/configuring-an-openshift-cluster-by-deploying-an-application-with-cluster-configurations.html#creating-an-application-by-using-the-oc-tool_configuring-an-openshift-cluster-by-deploying-an-application-with-cluster-configurations): 
 
 
-Explicitly declare all application destination namespaces in the Git repo or Helm repo for the application, and include the managed-by label in the namespaces. Refer to the link on how to declare a [namespace](https://github.com/redhat-developer-demos/openshift-gitops-examples/blob/44fc1d4a38cb79ffa6c8524788f5ac87f369d41c/apps/bgd/overlays/bgd/bgd-ns.yaml#L6) containing the managed-by label in a Git repo.
+Explicitly declare all application destination namespaces in the Git repo or Helm repo for the application, and include the managed-by label in the namespaces. Refer to the link on how to declare a [namespace](https://github.com/redhat-developer-demos/openshift-gitops-examples/blob/44fc1d4a38cb79ffa6c8524788f5ac87f369d41c/apps/bgd/overlays/bgd/bgd-ns.yaml#L6) containing the `managed-by label` in a Git repo.
 
 For deploying applications using the pull model, it is important for the ArgoCD application controllers to ignore these application resources on the hub cluster. The desired solution is to add the `argocd.argoproj.io/skip-reconcile` annotation to the template section of the applicationSet. On the RHACM hub cluster, the required OpenShift GitOps operator must be version 1.9.0 or above. On the managed cluster(s), the OpenShift GitOps operator is recommended to be at the same level as the hub cluster.
 
@@ -399,14 +400,13 @@ statuses:
     synced: "2"
 ```
 
-
 All the resources listed in the multicluster applicationSet report are actually deployed on the managed cluster(s). If a resource fails to be deployed, the resource won't be included in the resource list. However, the error message would indicate why the resource failed to be deployed.
 Limitations
 
 1. Resources are only deployed on the managed cluster(s).
-2. If a resource failed to be deployed, it won't be included in the Multicluster ApplicationSet Report.
+2. If a resource failed to be deployed, it won't be included in the `Multicluster ApplicationSet Report`.
 3. In the pull model, the local-cluster is excluded as target managed cluster.
-4. There might be usecases where the Managed-Clusters cannot reach the GitServer.  In this usecase a push model would be the only solution.
+4. There might be usecases where the Managed-Clusters cannot reach the `GitServer`.  In this usecase a push model would be the only solution.
 
 ## Wrapup
 
@@ -415,7 +415,8 @@ on RHACM's 2.8 feature and we would love to collaborate with you in the OpenClus
 
 
 
-References:
+## References:
+
 GitHub: https://github.com/open-cluster-management-io/OCM
 Website: https://open-cluster-management.io/
 Docs: https://open-cluster-management.io/concepts/
