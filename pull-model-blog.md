@@ -168,8 +168,7 @@ cluster1-guestbook-app   Synced        Healthy
 
 Setting up instructions for RHACM 2.8
 
-1. Install OpenShift GitOps operator on the hub and all the target managed clusters
-   We recommend the installed namespace: `openshift-gitops`
+1. Install OpenShift GitOps operator on the hub and all the target managed clusters. We recommend the installed namespace: `openshift-gitops`.
 
 
 2. Every managed cluster needs to have a cluster secret in the ArgoCD server namespace on the hub cluster. This is required by the ArgoCD application set controller to 
