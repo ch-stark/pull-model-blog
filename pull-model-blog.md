@@ -417,11 +417,11 @@ on RHACM's 2.8 feature and we would love to collaborate with you in the OpenClus
 
 ## References:
 
-GitHub: https://github.com/open-cluster-management-io/OCM
-Website: https://open-cluster-management.io/
-Docs: https://open-cluster-management.io/concepts/
-Slack: https://kubernetes.slack.com/channels/open-cluster-mgmt
-YouTube: https://www.youtube.com/c/OpenClusterManagement
-Mailing Group: https://groups.google.com/g/open-cluster-management
-Community Meetings: https://calendar.google.com/calendar/u/0/embed?src=openclustermanagement@gmail.com
+* GitHub: https://github.com/open-cluster-management-io/OCM
+* Website: https://open-cluster-management.io/
+* Docs: https://open-cluster-management.io/concepts/
+* Slack: https://kubernetes.slack.com/channels/open-cluster-mgmt
+* YouTube: https://www.youtube.com/c/OpenClusterManagement
+* Mailing Group: https://groups.google.com/g/open-cluster-management
+* Community Meetings: https://calendar.google.com/calendar/u/0/embed?src=openclustermanagement@gmail.com
 
