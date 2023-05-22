@@ -43,7 +43,7 @@ The `Open Cluster Management` agent on the Managed cluster will notice the Manif
 ## Setting up the solution using Open Cluster Management (OCM) 
 
 The Open Cluster Management (OCM) multi-cluster environment needs to be setup. 
-Note: Currently OCM as the upstream version of RHACM does not have a UI.
+**NOTE**: Currently OCM as the upstream version of RHACM does not have a UI.
 
 See the [OCM website](https://open-cluster-management.io/getting-started/quick-start/#setup-hub-and-managed-cluster) on how to set up a quick demo environment based on kind.
 
@@ -84,7 +84,7 @@ argocd-pull-integration-controller-manager   1/1     1            1           10
 ```
 
 On the Hub cluster, create an ArgoCD cluster secret that represents the managed cluster. 
-Note replace the cluster-name with the registered managed cluster name.
+**NOTE**: Replace the cluster-name with the registered managed cluster name.
 
 ```
 cat <<EOF | kubectl apply -f -
@@ -121,7 +121,7 @@ On the Hub cluster, apply the guestbook-app-set manifest:
 kubectl apply -f example/guestbook-app-set.yaml
 ```
 
-Note: The Application template inside the ApplicationSet must contain the following content:
+**NOTE**: The Application template inside the ApplicationSet must contain the following content:
 
 ```     
      labels:
