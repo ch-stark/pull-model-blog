@@ -336,7 +336,7 @@ spec:
 
 As a result of the feedback rules specified in manifestConfigs, the health status and the sync status from the status of the ArgoCD application are synced to the manifestwork’s statusFeedback.
 
-### Deploy application by the local ArgoCD server on the managed cluster.
+### Deploy application by the local ArgoCD server on the managed cluster
 
 After the ArgoCD application is created on the managed cluster through `ManifestWorks`, the local ArgoCD controllers reconcile to deploy the application. 
 The controllers deploy the application through this sequence of operations:
