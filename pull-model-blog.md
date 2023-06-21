@@ -54,26 +54,24 @@ The Hub cluster and remote/managed clusters need to have ArgoCD Application inst
 
 #### ArgoCD-Installation:
 
+Install ArgoCD to both Hub and managed cluster(s).
+
 ```
 kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 ```
 
-Set the property [skip-reconcile](https://argo-cd.readthedocs.io/en/latest/user-guide/skip_reconcile/). 
-
-```
-metadata:
-  annotations:
-    argocd.argoproj.io/skip-reconcile: "true"
-```
-
-Clone this project and connect to the Hub cluster and start the Pull controller:
+Clone the ArgoCD Pull Integration project:
 
 ```
 git clone https://github.com/open-cluster-management-io/argocd-pull-integration
 cd argocd-pull-integration
-export KUBECONFIG=/path/to/<hub-kubeconfig>
-make deploy
+```
+
+On the Hub cluster, install the Pull controller:
+
+```
+kubectl apply -f deploy/install.yaml
 ```
 
 If your controller starts successfully, you should see:
@@ -115,7 +113,6 @@ kubectl apply -f example/managed
 ```
 
 On the Hub cluster, apply the guestbook-app-set manifest:
-
 
 ```
 kubectl apply -f example/guestbook-app-set.yaml
